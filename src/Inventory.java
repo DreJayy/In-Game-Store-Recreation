@@ -23,6 +23,14 @@ public class Inventory {
         return seeds.getOrDefault(name, 0);
     }
 
+    public boolean removeSeed(String name) {
+        int quantity = getSeedQuantity(name);
+        if (quantity <= 0) return false;
+        if (quantity == 1) seeds.remove(name);
+        else seeds.put(name, quantity - 1);
+        return true;
+    }
+
     public void addCrop(Crop crop) {
         String name = crop.getName();
 
@@ -66,5 +74,11 @@ public class Inventory {
         }
 
         return true;
+    }
+
+    public void clearEquippedIfEmpty() {
+        if (equippedCrop != null && !equippedCrop.isAvailable()) {
+            equippedCrop = null;
+        }
     }
 }

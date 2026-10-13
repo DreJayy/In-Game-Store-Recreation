@@ -9,20 +9,30 @@ Seed components include:
 */
 
 public class Seed {
-    private String name;
-    private int price;
+    private final String name;
+    private final int price;
     private int stock;
-    private int maxStock;
-    private String rarity;
-    private String imagePath;
+    private final int maxStock;
+    private final String rarity;
+    private final String imagePath;
 
     public Seed(String name, int price, int maxStock, String rarity, String imagePath) {
-        this.name = name;
+        this(name, price, maxStock, maxStock, rarity, imagePath);
+    }
+
+    public Seed(String name, int price, int stock, int maxStock, String rarity, String imagePath) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Seed name cannot be blank.");
+        }
+        if (price < 0 || stock < 0 || maxStock < 0 || stock > maxStock) {
+            throw new IllegalArgumentException("Seed price and stock cannot be negative.");
+        }
+        this.name = name.trim();
         this.price = price;
-        this.stock = maxStock;
+        this.stock = stock;
         this.maxStock = maxStock;
-        this.rarity = rarity;
-        this.imagePath = imagePath;
+        this.rarity = rarity == null || rarity.trim().isEmpty() ? "Common" : rarity.trim();
+        this.imagePath = imagePath == null ? "" : imagePath;
     }
 
     public String getName() {
@@ -54,12 +64,15 @@ public class Seed {
     }
 
     public boolean decreaseStock() {
-        if (isAvailable()) {
-            stock--;
-            return true;
-        }
+        return decreaseStock(1);
+    }
 
-        return false;
+    public boolean decreaseStock(int amount) {
+        if (amount <= 0 || stock < amount) {
+            return false;
+        }
+        stock -= amount;
+        return true;
     }
 
     public void restock() {

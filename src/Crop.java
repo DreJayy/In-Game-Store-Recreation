@@ -1,15 +1,20 @@
-
 public class Crop {
-    private String name;
-    private int sellPrice;
+    private final String name;
+    private final int sellPrice;
     private int quantity;
-    private String imagePath;
+    private final String imagePath;
 
     public Crop(String name, int sellPrice, int quantity, String imagePath) {
-        this.name = name;
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Crop name cannot be blank.");
+        }
+        if (sellPrice < 0 || quantity < 0) {
+            throw new IllegalArgumentException("Crop price and quantity cannot be negative.");
+        }
+        this.name = name.trim();
         this.sellPrice = sellPrice;
-        this.quantity = Math.max(0, quantity);
-        this.imagePath = imagePath;
+        this.quantity = quantity;
+        this.imagePath = imagePath == null ? "" : imagePath;
     }
 
     public String getName() {
@@ -33,17 +38,25 @@ public class Crop {
     }
 
     public boolean decreaseQuantity() {
-        if (isAvailable()) {
-            quantity--;
-            return true;
-        }
+        return decreaseQuantity(1);
+    }
 
-        return false;
+    public boolean decreaseQuantity(int amount) {
+        if (amount <= 0 || quantity < amount) {
+            return false;
+        }
+        quantity -= amount;
+        return true;
     }
 
     public void addQuantity(int amount) {
-        if (amount > 0) {
-            quantity += amount;
+        if (amount < 0 || (long) quantity + amount > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Invalid crop quantity increase.");
         }
+        quantity += amount;
+    }
+
+    public void clearQuantity() {
+        quantity = 0;
     }
 }
